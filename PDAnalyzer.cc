@@ -184,6 +184,15 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
 
     int nMuSelected = 0;
 
+    for(uint i=0; i<genId->size(); ++i ){
+        if(genPt->at(i)<2) continue;
+        if(abs(genEta->at(i))>2.4) continue;
+        if(abs(genId->at(i))==13) counter[0]++;
+        if(abs(genId->at(i))!=13&&IsLongLived(i)) counter[1]++;
+    }
+
+    counter[0] = counter[0] - 2; // removeing signal 
+
     for ( int iMuon = 0; iMuon < nMuons; ++iMuon ){
 
         //EXCLUDING SIGNAL
@@ -220,6 +229,8 @@ bool PDAnalyzer::analyze( int entry, int event_file, int event_tot ) {
         ++nMuSelected;
         if((abs(muoLund) == 13) && (muoAncestor > 0)) ++nReal;
         if(abs(muoLund) != 13) ++nFake;
+        if(abs(muoLund) == 13) counter[2]++;
+        if(abs(muoLund) != 13) counter[3]++;
 
 
         //TWRITER FILLING
@@ -286,6 +297,8 @@ void PDAnalyzer::endJob() {
     tWriter->close();
     cout<<"nB "<<nB<<endl<<"nReal "<<nReal<<endl<<"nFake "<<nFake<<endl<<100.0*nReal/nB<<endl;
     for(int i=0;i<10;++i) cout<<"["<<i<<"]  "<<counter[i]<<endl;
+    cout<<100.0*counter[2]/(float)counter[0]<<endl;
+    cout<<100.0*counter[3]/(float)counter[1]<<endl;
     return;
 }
 
